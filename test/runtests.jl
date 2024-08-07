@@ -35,6 +35,9 @@ using Test
 
         it("to_be_disjoint", () -> expect([1, 4]) |> to_be_disjoint([2, 3]))
         it("not |> to_be_disjoint", () -> expect([1, 2, 3]) |> not |> to_be_disjoint([1, 4]))
+
+        it("to_be_in", () -> expect(1) |> to_be_in([1, 2, 3]))
+        it("not |> to_be_in", () -> expect(4) |> not |> to_be_in([1, 2, 3]))
     end
 
     @testset "Assertions" begin

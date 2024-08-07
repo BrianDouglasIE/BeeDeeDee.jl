@@ -3,7 +3,7 @@ module Matchers
 	using ..Assertions
 	
 	export to_be, to_be_true, to_be_false, to_be_nothing, to_be_typeof, to_be_empty,
-	to_have_key, to_be_subset, to_be_setequal, to_be_disjoint
+	to_have_key, to_be_subset, to_be_setequal, to_be_disjoint, to_be_in
 	
 	function to_be(expected::Any)
 		return (actual::Expectation) -> begin
@@ -54,6 +54,12 @@ module Matchers
 	function to_be_disjoint(expected::Any)
 		return (actual::Expectation) -> begin
 			@test actual.comparator(isdisjoint(actual.value, expected), true)
+		end
+	end
+
+	function to_be_in(expected::Any)
+		return (actual::Expectation) -> begin
+			@test actual.comparator(in(actual.value, expected), true)
 		end
 	end
 end
