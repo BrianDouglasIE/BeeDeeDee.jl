@@ -25,7 +25,9 @@ module Suite
 
         global before_all_called = false
         
-        @testset "$description" f()
+        @testset "$description" begin
+            f()
+        end
 
         global current_suite_name = ""
     end
@@ -42,7 +44,9 @@ module Suite
             suite.before_each()
         end
         
-        @testset "$description" f()
+        @testset "$description" begin
+            f()
+        end
     end
 
     function before_all(f::Function)
