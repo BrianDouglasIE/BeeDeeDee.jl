@@ -1,5 +1,8 @@
 module BeeDeeDee
 
-# Write your package code here.
+include("Assertions.jl")
+include("Suite.jl")
+
+export Assertions, Suite
 
 end
