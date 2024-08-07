@@ -21,6 +21,11 @@ describe("Calculator", function()
         result = subtract(5, 3)
         expect(result) |> to_be(2)
     end)
+
+     it("should subtract two numbers correctly", function()
+        result = subtract(5, 2)
+        expect(result) |> not |> to_be(5)
+    end)
 end)
 ```
 
@@ -31,6 +36,7 @@ end)
  - before_each: Runs setup code before each individual test.
  - it("should add two numbers correctly", ...): Defines a test case for the addition functionality.
  - expect(result) |> to_be(3): Asserts that the result of the addition is 3.
+ - expect(result) |> not |> to_be(3): Asserts that the result is not 3.
 
 ## Benefits
 
