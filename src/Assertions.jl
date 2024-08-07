@@ -1,35 +1,18 @@
 module Assertions
 	using Test
 
-	export to_be, not, expect
+	export not, expect, Expectation
 
 	struct Expectation
 		value::Any
-	end
-
-	struct NegatedExpectation
-		value::Any
+		comparator::Function
 	end
 
 	function expect(value::Any)
-		return Expectation(value)
+		return Expectation(value, ===)
 	end
 
-	function not(expected::Any)
-		return NegatedExpectation(expected)
-	end
-
-	function comparator(actual::Expectation, expected::Any)
-		@test actual.value === expected
-	end
-
-	function comparator(actual::NegatedExpectation, expected::Any)
-		@test actual.value !== expected
-	end
-
-	function to_be(expected::Any)
-		return (actual::Union{Expectation,NegatedExpectation}) -> begin
-			comparator(actual, expected)
-		end 
+	function not(expected::Expectation)
+		return Expectation(expected.value, !==)
 	end
 end

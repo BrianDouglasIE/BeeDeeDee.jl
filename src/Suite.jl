@@ -12,6 +12,9 @@ module Suite
     global suites = Dict{String, DescribeBlock}()
     global before_all_called = false
 	global current_suite_name = ""
+
+	# set top level as it's own block
+	suites[current_suite_name] = DescribeBlock(nothing, nothing, [])
     
     function describe(description::String, f::Function)
     	global current_suite_name = description
@@ -29,10 +32,12 @@ module Suite
 
     function it(description::String, f::Function)
         suite = suites[current_suite_name]
+        
         if !isnothing(suite.before_all) && !before_all_called
             suite.before_all()
             global before_all_called = true
         end
+        
         if !isnothing(suite.before_each)
             suite.before_each()
         end
