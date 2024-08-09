@@ -1,9 +1,8 @@
 module BeeDeeDee
 
-include("Assertions.jl")
-include("Matchers.jl")
-include("Suite.jl")
+	include("TestSuite.jl")
+	include("Matchers.jl")
 
-export Assertions, Suite, Matchers
+	export TestSuite, Matchers
 
 end

@@ -1,6 +1,20 @@
 module Matchers
 	using Test
-	using ..Assertions
+
+	export not, expect, Expectation
+
+	struct Expectation
+		value::Any
+		comparator::Function
+	end
+
+	function expect(value::Any)
+		return Expectation(value, ===)
+	end
+
+	function not(expected::Expectation)
+		return Expectation(expected.value, !==)
+	end
 	
 	export to_be, to_be_true, to_be_false, to_be_nothing, to_be_typeof, to_be_empty,
 	to_have_key, to_be_subset, to_be_setequal, to_be_disjoint, to_be_in

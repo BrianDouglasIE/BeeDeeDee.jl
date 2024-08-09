@@ -1,10 +1,81 @@
-using BeeDeeDee.Suite
+using BeeDeeDee.TestSuite
 using BeeDeeDee.Matchers
-using BeeDeeDee.Assertions
 
 using Test
 
 @testset "BeeDeeDee.jl" begin
+    @testset "Hooks" begin
+        @testset "Top level hooks work" begin
+            test_subject_before_all = 0
+            test_subject_before_each = 0
+            test_subject_after_each = 0
+            test_subject_after_all = 0
+            
+            before_all(() -> test_subject_before_all += 1)
+            before_each(() -> test_subject_before_each += 1)
+            after_all(() -> test_subject_after_all += 1)
+            after_each(() -> test_subject_after_each += 1)
+
+            it("should increment before_all", () -> expect(test_subject_before_all) |> to_be(1))
+            
+            it("should increment before_each and not before_all", () -> begin
+                expect(test_subject_before_all) |> to_be(1)
+                expect(test_subject_before_each) |> to_be(2)
+            end)
+
+            it("should increment after each", () -> expect(test_subject_after_each) |> to_be(2))
+        end
+
+        @testset "Describe level hooks work" begin
+            test_subject_before_all = 0
+            test_subject_before_each = 0
+            test_subject_after_each = 0
+            test_subject_after_all = 0
+
+            describe("A suite with hooks", () -> begin
+                before_all(() -> test_subject_before_all += 1)
+                before_each(() -> test_subject_before_each += 1)
+                after_all(() -> test_subject_after_all += 1)
+                after_each(() -> test_subject_after_each += 1)
+
+                it("should increment before_all", () -> expect(test_subject_before_all) |> to_be(1))
+                
+                it("should increment before_each and not before_all", () -> begin
+                    expect(test_subject_before_all) |> to_be(1)
+                    expect(test_subject_before_each) |> to_be(2)
+                end)
+
+                it("should increment after each", () -> expect(test_subject_after_each) |> to_be(2))
+            end)
+
+            it("should increment after all", () -> expect(test_subject_after_all) |> to_be(1))
+        end
+    end
+
+    @testset "Async" begin
+        function async_double(x)
+            return @async begin
+                sleep(1)
+                return x * 2
+            end
+        end
+
+        it("should correctly test async method call", @async begin
+            sleep(1)
+            expect(1) |> to_be(1)
+        end)
+
+        describe("An async describe block with async calls", () -> begin
+            it("should correctly test async method call", () -> begin
+                four = async_double(2)
+                result = fetch(four)
+                expect(result) |> to_be(4)
+            end)
+
+            it("should handle non async with async tests", () -> expect(1) |> to_be(1))
+        end)
+    end
+
     @testset "Matchers" begin
         it("to_be", () -> expect(1) |> to_be(1))
         it("not |> to_be", () -> expect(2) |> not |> to_be(1))
@@ -38,33 +109,5 @@ using Test
 
         it("to_be_in", () -> expect(1) |> to_be_in([1, 2, 3]))
         it("not |> to_be_in", () -> expect(4) |> not |> to_be_in([1, 2, 3]))
-    end
-
-    @testset "Assertions" begin
-        describe("Suite 1 - with set up", function()
-            before_all(() -> println("Setup before all tests in Suite 1"))
-            before_each(() -> println("Setup before each test in Suite 1"))
-
-            it("test 1", function()
-                expect(true) |> to_be(true)
-            end)
-
-            it("test 2", function()
-                expect(true) |> not |> to_be(false)
-            end)
-        end)
-
-        describe("Suite 2 - with different set up", function()
-            before_all(() -> println("Setup before all tests in Suite 2"))
-            before_each(() -> println("Setup before each test in Suite 2"))
-
-            it("test 3", function()
-                expect(true) |> to_be(true)
-            end)
-
-            it("test 4", function()
-                expect(true) |> not |> to_be(false)
-            end)
-        end)
     end
 end
