@@ -76,6 +76,14 @@ using Test
         end)
     end
 
+    @testset "Verbose describe blocks" begin
+        describe("A verbose describe block", () -> begin
+            for i in 1:3
+                it("should log the test name $i", () -> expect(i) |> to_be(i))
+            end
+        end; verbose = true)
+    end
+
     @testset "Matchers" begin
         it("to_be", () -> expect(1) |> to_be(1))
         it("not |> to_be", () -> expect(2) |> not |> to_be(1))

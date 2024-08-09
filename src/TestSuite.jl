@@ -66,12 +66,12 @@ module TestSuite
     end
 
     
-    function describe(description::String, f::Union{Task,Function})
+    function describe(description::String, f::Union{Task,Function}; verbose::Bool = false)
     	global current_suite_name = description
         
         suite = get_current_suite()
         
-        @testset "$description" begin
+        @testset verbose=verbose "$description" begin
             handle_callback(f)
         end
 
@@ -80,19 +80,19 @@ module TestSuite
         global current_suite_name = ""
     end
 
-    function it(description::String, f::Union{Task,Function})
+    function it(description::String, f::Union{Task,Function};  verbose::Bool = false)
         suite = get_current_suite()
         
         execute_before_all_hooks(suite.hooks)
         execute_before_each_hooks(suite.hooks)
         
-        @testset "$description" begin
+        @testset verbose=verbose "$description" begin
             handle_callback(f)
         end
 
         execute_after_each_hooks(suite.hooks)
     end
-
+ 
     function before_all(f::Union{Task,Function})
         push!(get_current_suite().hooks.before_all, f)
     end
