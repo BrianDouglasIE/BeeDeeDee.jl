@@ -87,7 +87,10 @@ module TestSuite
         execute_before_each_hooks(suite.hooks)
         
         @testset verbose=verbose "$description" begin
-            handle_callback(f)
+            test = handle_callback(f)
+            log = join(test.logs, " ")
+            println("[$description]: $log")
+            @test test.result
         end
 
         execute_after_each_hooks(suite.hooks)
