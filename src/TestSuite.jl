@@ -91,7 +91,7 @@ function get_current_test()::TestResult
     return tests[current_test]
 end
 
-function describe(description::String, f::Union{Task,Function}; verbose::Bool=false)::Suite
+function describe(description::String, f::Union{Task,Function})::Suite
     global current_suite_name = description
 
     suite = get_current_suite()
@@ -103,7 +103,7 @@ function describe(description::String, f::Union{Task,Function}; verbose::Bool=fa
     return suite
 end
 
-function test(description::String, f::Union{Task,Function}; verbose::Bool=false)::TestResult
+function test(description::String, f::Union{Task,Function})::TestResult
     global current_test += 1
 
     suite = get_current_suite()
@@ -184,15 +184,6 @@ end
 function and(expected::Expectation)
     log = "AND"
     return create_expectation(expected.value, expected.comparator, expected.result, [expected.logs...; log])
-end
-
-function to_be(expected_value::Any)
-    expected = expect(expected_value)
-    return (actual::Expectation) -> begin
-        result = actual.comparator(expected.value, actual.value)
-        log = ["to be $(expected.value)"]
-        return create_expectation(expected.value, actual.comparator, expected.result && result, [actual.logs...; log])
-    end
 end
 
 function construct_comparator(comparator::Function, description::String)

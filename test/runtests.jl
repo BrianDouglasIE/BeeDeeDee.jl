@@ -4,85 +4,84 @@ using BeeDeeDee.Matchers
 using Test
 
 @testset "BeeDeeDee.jl" begin
-    # @testset "Hooks" begin
-    #     @testset "Top level hooks work" begin
-    #         test_subject_before_all = 0
-    #         test_subject_before_each = 0
-    #         test_subject_after_each = 0
-    #         test_subject_after_all = 0
+    @testset "Hooks" begin
+        @testset "Top level hooks work" begin
+            test_subject_before_all = 0
+            test_subject_before_each = 0
+            test_subject_after_each = 0
+            test_subject_after_all = 0
 
-    #         before_all(() -> test_subject_before_all += 1)
-    #         before_each(() -> test_subject_before_each += 1)
-    #         after_all(() -> test_subject_after_all += 1)
-    #         after_each(() -> test_subject_after_each += 1)
+            before_all(() -> test_subject_before_all += 1)
+            before_each(() -> test_subject_before_each += 1)
+            after_all(() -> test_subject_after_all += 1)
+            after_each(() -> test_subject_after_each += 1)
 
-    #         it("should increment before_all", () -> expect(test_subject_before_all) |> to_be(1))
+            @test test("should increment before_all",
+                () -> expect(test_subject_before_all) |> to_be(1)).status === :Pass
 
-    #         it("should increment before_each and not before_all", () -> begin
-    #             expect(test_subject_before_all) |> to_be(1)
-    #             expect(test_subject_before_each) |> to_be(2)
-    #         end)
+            @test test("should increment before_each and not before_all", () -> begin
+                expect(test_subject_before_all) |> to_be(1)
+                expect(test_subject_before_each) |> to_be(2)
+            end).status === :Pass
 
-    #         it("should increment after each", () -> expect(test_subject_after_each) |> to_be(2))
-    #     end
+            @test test("should increment after each",
+                () -> expect(test_subject_after_each) |> to_be(2)).status === :Pass
+        end
 
-    #     @testset "Describe level hooks work" begin
-    #         test_subject_before_all = 0
-    #         test_subject_before_each = 0
-    #         test_subject_after_each = 0
-    #         test_subject_after_all = 0
+        @testset "Describe level hooks work" begin
+            test_subject_before_all = 0
+            test_subject_before_each = 0
+            test_subject_after_each = 0
+            test_subject_after_all = 0
 
-    #         describe("A suite with hooks", () -> begin
-    #             before_all(() -> test_subject_before_all += 1)
-    #             before_each(() -> test_subject_before_each += 1)
-    #             after_all(() -> test_subject_after_all += 1)
-    #             after_each(() -> test_subject_after_each += 1)
+            describe("A suite with hooks", () -> begin
+                before_all(() -> test_subject_before_all += 1)
+                before_each(() -> test_subject_before_each += 1)
+                after_all(() -> test_subject_after_all += 1)
+                after_each(() -> test_subject_after_each += 1)
 
-    #             it("should increment before_all", () -> expect(test_subject_before_all) |> to_be(1))
+                @test test("should increment before_all",
+                    () -> expect(test_subject_before_all) |> to_be(1)).status === :Pass
 
-    #             it("should increment before_each and not before_all", () -> begin
-    #                 expect(test_subject_before_all) |> to_be(1)
-    #                 expect(test_subject_before_each) |> to_be(2)
-    #             end)
+                @test test("should increment before_each and not before_all", () -> begin
+                    expect(test_subject_before_all) |> to_be(1)
+                    expect(test_subject_before_each) |> to_be(2)
+                end).status === :Pass
 
-    #             it("should increment after each", () -> expect(test_subject_after_each) |> to_be(2))
-    #         end)
+                @test test("should increment after each",
+                    () -> expect(test_subject_after_each) |> to_be(2)).status === :Pass
+            end)
 
-    #         it("should increment after all", () -> expect(test_subject_after_all) |> to_be(1))
-    #     end
-    # end
+            @test test("should increment after all",
+                () -> expect(test_subject_after_all) |> to_be(1)).status === :Pass
+        end
+    end
 
-    # @testset "Async" begin
-    #     function async_double(x)
-    #         return @async begin
-    #             sleep(1)
-    #             return x * 2
-    #         end
-    #     end
+    @testset "Async" begin
+        function async_double(x)
+            return @async begin
+                sleep(1)
+                return x * 2
+            end
+        end
 
-    #     it("should correctly test async method call", @async begin
-    #         sleep(1)
-    #         expect(1) |> to_be(1)
-    #     end)
+        @test test("should correctly test async method call", @async begin
+            sleep(1)
+            expect(1) |> to_be(1)
+        end).status === :Pass
 
-    #     describe("An async describe block with async calls", () -> begin
-    #         it("should correctly test async method call", () -> begin
-    #             four = async_double(2)
-    #             result = fetch(four)
-    #             expect(result) |> to_be(4)
-    #         end)
+        describe("An async describe block with async calls", () -> begin
+            @test test("should correctly test async method call", @async begin
+                four = async_double(2)
+                result = fetch(four)
+                expect(result) |> to_be(4)
+            end).status === :Pass
 
-    #         it("should handle non async with async tests", () -> expect(1) |> to_be(1))
-    #     end)
-    # end
-
-    # @testset "Verbose describe blocks" begin
-    #     describe("A verbose describe block", verbose=true, () -> begin
-    #         for i in 1:3
-    #             it("should log the test name $i", () -> expect(i) |> to_be(i))
-    #         end
-    #     end)
-    # end
+            @test test("should handle non async with async tests", () -> begin
+                expect(1) |> to_be(1)
+            end).status === :Pass
+        end)
+    end
 
     @testset "Comparators" begin
         @test test("should negate comparison", () -> begin

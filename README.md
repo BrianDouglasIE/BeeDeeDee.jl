@@ -9,7 +9,6 @@ BeeDeeDee.jl is a testing framework for Julia that provides a simple and flexibl
 
  - **Hooks**: Define `before_all`, `before_each`, `after_all`, and `after_each` hooks at both the top level and within individual describe blocks.
  - **Asynchronous Testing**: Support for testing asynchronous code with tasks.
- - **Verbose Output**: Option to enable verbose logging for detailed output.
  - **Matchers**: A rich set of matchers for writing expressive tests.
 
 ## Installation
@@ -82,21 +81,6 @@ describe("An async describe block with async calls", () -> begin
     end)
     it("should handle non async with async tests", () -> expect(1) |> to_be(1))
 end)
-```
-
-### Verbose Output
-
-You can enable verbose output for `describe` blocks to get detailed logging during test execution.
-
-```julia
-using BeeDeeDee.TestSuite
-using BeeDeeDee.Matchers
-
-describe("A verbose describe block", () -> begin
-    for i in 1:3
-        it("should log the test name $i", () -> expect(i) |> to_be(i))
-    end
-end; verbose = true)
 ```
 
 ### Matchers
