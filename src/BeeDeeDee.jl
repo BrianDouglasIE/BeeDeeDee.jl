@@ -1,8 +1,8 @@
 module BeeDeeDee
 
-	include("TestSuite.jl")
-	include("Matchers.jl")
+include("TestSuite.jl")
+include("Matchers.jl")
 
-	export TestSuite, Matchers
+export TestSuite, Matchers
 
 end

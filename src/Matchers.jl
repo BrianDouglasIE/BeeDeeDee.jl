@@ -1,91 +1,20 @@
 module Matchers
 using Test
-
-export Expectation, expect, not, and
-
-struct Expectation
-    value::Any
-    comparator::Function
-    result::Bool
-    logs::Vector{String}
-end
-
-function expect(value::Any)
-    return Expectation(value, ===, true, ["Expecting $value"])
-end
-
-function not(expected::Expectation)
-    inverted_comparator = (x, y) -> !expected.comparator(x, y)
-	log = "NOT"
-    return Expectation(expected.value, inverted_comparator, expected.result, [expected.logs...; log])
-end
-
-function and(expected::Expectation)
-	log = "AND"
-    return  Expectation(expected.value, expected.comparator, expected.result, [expected.logs...; log])
-end
+using ..TestSuite
 
 export to_be, to_be_true, to_be_false, to_be_nothing, to_be_typeof, to_be_empty,
     to_have_key, to_be_subset, to_be_setequal, to_be_disjoint, to_be_in
 
-function to_be(expected_value::Any)
-    expected = expect(expected_value)
-    return (actual::Expectation) -> begin
-        result = actual.comparator(expected.value, actual.value)
-        log = ["to be $(expected.value)"]
-        return Expectation(expected.value, actual.comparator, expected.result && result, [actual.logs...; log])
-    end
-end
+to_be = construct_comparator(===, "to be")
+to_be_true = () -> to_be(true)
+to_be_false = () -> to_be(false)
+to_be_in = construct_comparator(in, "to be in")
+to_be_nothing = construct_comparator(isnothing, "to be nothing")
+to_be_typeof = construct_comparator(isa, "to be type of")
+to_be_empty = construct_comparator(isempty, "to be empty")
+to_have_key = construct_comparator(haskey, "to have key")
+to_be_subset = construct_comparator(issubset, "to be subset of")
+to_be_setequal = construct_comparator(issetequal, "to have equal set")
+to_be_disjoint = construct_comparator(isdisjoint, "to be disjoint of")
 
-function to_be_true(actual::Expectation)
-    return actual.comparator(actual.value, true)
-end
-
-function to_be_false(actual::Expectation)
-    return actual.comparator(actual.value, false)
-end
-
-function to_be_nothing(actual::Expectation)
-    return actual.comparator(isnothing(actual.value), true)
-end
-
-function to_be_typeof(expected::Any)
-    return (actual::Expectation) -> begin
-        return actual.comparator(typeof(actual.value), expected)
-    end
-end
-
-function to_be_empty(actual::Expectation)
-    return actual.comparator(isempty(actual.value), true)
-end
-
-function to_have_key(expected::Any)
-    return (actual::Expectation) -> begin
-        return actual.comparator(haskey(actual.value, expected), true)
-    end
-end
-
-function to_be_subset(expected::Any)
-    return (actual::Expectation) -> begin
-        return actual.comparator(issubset(actual.value, expected), true)
-    end
-end
-
-function to_be_setequal(expected::Any)
-    return (actual::Expectation) -> begin
-        return actual.comparator(issetequal(actual.value, expected), true)
-    end
-end
-
-function to_be_disjoint(expected::Any)
-    return (actual::Expectation) -> begin
-        return actual.comparator(isdisjoint(actual.value, expected), true)
-    end
-end
-
-function to_be_in(expected::Any)
-    return (actual::Expectation) -> begin
-        return actual.comparator(in(actual.value, expected), true)
-    end
-end
 end
