@@ -3,11 +3,19 @@ using Test
 using ..TestSuite
 
 export to_be, to_be_true, to_be_false, to_be_nothing, to_be_typeof, to_be_empty,
-    to_have_key, to_be_subset, to_be_setequal, to_be_disjoint, to_be_in
+    to_have_key, to_be_subset, to_be_setequal, to_be_disjoint, to_be_in,
+    to_be_greater_than,
+    to_be_less_than,
+    to_be_greater_than_or_equal,
+    to_be_less_than_or_equal
 
 to_be = construct_comparator(===, "to be")
 to_be_true = () -> to_be(true)
 to_be_false = () -> to_be(false)
+to_be_greater_than = construct_comparator(>, "to be greater than")
+to_be_less_than = construct_comparator(<, "to be less than")
+to_be_greater_than_or_equal = construct_comparator(>=, "to be greater than or equal")
+to_be_less_than_or_equal = construct_comparator(<=, "to be less than or equal")
 to_be_in = construct_comparator(in, "to be in")
 to_be_nothing = construct_comparator(isnothing, "to be nothing")
 to_be_typeof = construct_comparator(isa, "to be type of")

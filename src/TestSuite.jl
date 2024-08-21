@@ -2,9 +2,8 @@ module TestSuite
 using Test
 
 export describe, it, test, before_all, before_each, after_all, after_each,
-    Expectation, expect, not, and, create_expectation, construct_comparator
-
-
+    Expectation, expect, not, and, create_expectation, construct_comparator,
+    testset
 
 struct Expectation
     value::Any
@@ -25,12 +24,17 @@ end
 Base.@kwdef mutable struct TestResult
     description::String = ""
     status::Symbol = :Pending
+    f::Union{Task,Function} = () -> nothing
     expectations::Vector{Expectation} = []
 end
 
 Base.@kwdef mutable struct Suite
     tests::Vector{TestResult} = []
+    child_suites::Vector{Suite} = []
+    f::Union{Task,Function} = () -> nothing
+    status::Symbol = :Pending
     hooks::Hooks = Hooks()
+    description::String = ""
 end
 
 global suites = Dict{String,Suite}()
@@ -91,16 +95,73 @@ function get_current_test()::TestResult
     return tests[current_test]
 end
 
-function describe(description::String, f::Union{Task,Function})::Suite
+function testset(description::String, f::Union{Task,Function})::Suite
+    parent_suite = nothing
+    if !isempty(current_suite_name)
+        parent_suite = get_current_suite()
+    end
+
     global current_suite_name = description
-
     suite = get_current_suite()
-    handle_callback(f)
-    execute_after_all_hooks(suite.hooks)
+    suite.description = description
+    suite.f = f
 
-    global current_suite_name = ""
+    if !isnothing(parent_suite)
+        push!(parent_suite.child_suites, suite)
+    else
+        execute_suite(suite)
+    end
+
+    if !isnothing(parent_suite)
+        global current_suite_name = parent_suite.description
+    else
+        global current_suite_name = ""
+    end
 
     return suite
+end
+
+function execute_suite(suite::Suite)
+    global current_suite_name = suite.description
+    handle_callback(suite.f)
+
+    execute_before_all_hooks(suite.hooks)
+    execute_queued_tests(suite)
+
+    if !isempty(suite.child_suites)
+        for child_suite in suite.child_suites
+            execute_suite(child_suite)
+        end
+    end
+
+    execute_after_all_hooks(suite.hooks)
+end
+
+describe = testset
+
+function execute_queued_tests(suite::Suite)
+    for test in suite.tests
+        if test.status === :Pending
+            execute_before_each_hooks(suite.hooks)
+
+            handle_callback(test.f)
+
+            if any(it -> it.result === false, test.expectations)
+                test.status = :Fail
+            else
+                test.status = :Pass
+            end
+
+            if test.status === :Pass
+                print(".")
+            else
+                print("x")
+            end
+
+            execute_after_each_hooks(suite.hooks)
+        end
+    end
+
 end
 
 function test(description::String, f::Union{Task,Function})::TestResult
@@ -109,37 +170,9 @@ function test(description::String, f::Union{Task,Function})::TestResult
     suite = get_current_suite()
     test = get_current_test()
 
-    execute_before_all_hooks(suite.hooks)
-    execute_before_each_hooks(suite.hooks)
-
     test.description = description
-    handle_callback(f)
-
-    if any(it -> it.result === false, test.expectations)
-        test.status = :Fail
-    else
-        test.status = :Pass
-    end
-
-    if test.status === :Pass
-        print(".")
-    else
-        print("x")
-    end
-
+    test.f = f
     push!(suite.tests, test)
-
-    # log = join(test.logs, " ")
-    # println("[$description]: $log")
-    # if test.result 
-    #     print(".")
-    # else
-    #     print("x")
-    # end
-    # push!(suite.tests, test)
-    # @test test.result
-
-    execute_after_each_hooks(suite.hooks)
 
     return test
 end
@@ -187,7 +220,7 @@ function and(expected::Expectation)
 end
 
 function construct_comparator(comparator::Function, description::String)
-    return function (expected_value::Any = nothing)
+    return function (expected_value::Any=nothing)
         return (actual::Expectation) -> begin
             if isnothing(expected_value)
                 result = comparator(actual.value)
@@ -196,9 +229,9 @@ function construct_comparator(comparator::Function, description::String)
             end
 
             result = actual.comparator(result, true)
-            
+
             log = ["$description $(expected_value)"]
-            
+
             return create_expectation(actual.value, ===, actual.result && result, [actual.logs...; log])
         end
     end
