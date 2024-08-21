@@ -15,7 +15,7 @@ describe("User Tests", () -> begin
 
     describe("User Age Test", () -> begin
         # examples of testing age, all with same outcome
-        it("should have an age greater than or equal 18", () -> expect(user.age) |> to_be_greater_than(17))
+        it("should have an age greater than or equal 18", () -> expect(user.age) |> to_be_greater_than(100))
         it("should have an age greater than or equal 18", () -> expect(user.age) |> to_be_greater_than_or_equal(18))
         it("should have an age greater than or equal 18", () -> expect(user.age) |> not |> to_be_less_than(18))
     end)

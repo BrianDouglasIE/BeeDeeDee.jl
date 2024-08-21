@@ -37,6 +37,7 @@ Base.@kwdef mutable struct Suite
     description::String = ""
 end
 
+global suite_count = 0
 global suites = Dict{String,Suite}()
 global tests = Dict{Int64,TestResult}()
 global current_suite_name = ""
@@ -96,6 +97,7 @@ function get_current_test()::TestResult
 end
 
 function testset(description::String, f::Union{Task,Function})::Suite
+    global suite_count += 1
     parent_suite = nothing
     if !isempty(current_suite_name)
         parent_suite = get_current_suite()
@@ -135,6 +137,29 @@ function execute_suite(suite::Suite)
     end
 
     execute_after_all_hooks(suite.hooks)
+
+    suite.status = :Complete
+    global suite_count -= 1
+
+    if suite_count === 0
+        println()
+        for (_, s) in suites
+            if any(it -> it.status === :Fail, s.tests)
+                println(s.description)
+
+                for t in s.tests
+                    if t.status === :Fail
+                        println("  ", t.description)
+                        for e in t.expectations
+                            if !e.result
+                                println("  => ", join(e.logs, " "))
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
 
 describe = testset
