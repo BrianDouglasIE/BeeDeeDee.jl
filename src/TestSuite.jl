@@ -26,6 +26,7 @@ Base.@kwdef mutable struct TestResult
     status::Symbol = :Pending
     f::Union{Task,Function} = () -> nothing
     expectations::Vector{Expectation} = []
+    stacktrace::Any = []
 end
 
 Base.@kwdef mutable struct Suite
@@ -145,14 +146,19 @@ function execute_suite(suite::Suite)
         println()
         for (_, s) in suites
             if any(it -> it.status === :Fail, s.tests)
-                println(s.description)
+                println("[", BOLD(s.description), "]")
 
                 for t in s.tests
                     if t.status === :Fail
-                        println("  ", t.description)
+                        println("  [", t.description, "]")
+                        println("    [Failing Expectations]: ", BOLD("$(length(count(it -> !it.result, t.expectations)))"))
                         for e in t.expectations
                             if !e.result
-                                println("  => ", join(e.logs, " "))
+                                println("      ", RED_FG(BOLD(join(e.logs, " "))))
+                                println("\n    ", BOLD("Stacktrace: "))
+                                for (i, frame) in enumerate(t.stacktrace)
+                                    println("    [$i]: ", frame)
+                                end
                             end
                         end
                     end
@@ -197,6 +203,8 @@ function test(description::String, f::Union{Task,Function})::TestResult
 
     test.description = description
     test.f = f
+    test.stacktrace = stacktrace()
+
     push!(suite.tests, test)
 
     return test
@@ -245,7 +253,7 @@ function and(expected::Expectation)
 end
 
 function construct_comparator(comparator::Function, description::String)
-    return function (expected_value::Any = nothing)
+    return function (expected_value::Any=nothing)
         return (actual::Expectation) -> begin
             if isnothing(expected_value)
                 result = comparator(actual.value)

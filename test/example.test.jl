@@ -35,9 +35,9 @@ describe("User Tests", () -> begin
     end)
 
     describe("User Email Tests", () -> begin
-    	it("should have a valid email", () -> begin
-    		expect(user.email) |> to_be_valid_email()
-    		expect(user.email) |> to_match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-    	end)
+        it("should have a valid email", () -> begin
+            expect(user.email) |> to_be_valid_email()
+            expect(user.email) |> to_match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+        end)
     end)
 end)

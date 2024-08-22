@@ -26,13 +26,6 @@ to_be_subset = construct_comparator(issubset, "to be subset of")
 to_be_setequal = construct_comparator(issetequal, "to have equal set")
 to_be_disjoint = construct_comparator(isdisjoint, "to be disjoint of")
 to_match = construct_comparator((expected, actual) -> occursin(actual, expected), "to match")
-
-function is_valid_email(email::String)::Bool
-    # Define a regular expression for a basic email format
-    email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    return occursin(email_regex, email)
-end
-
-to_be_valid_email = construct_comparator(is_valid_email, "to be valid email")
+to_be_valid_email = () -> to_match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 
 end
