@@ -1,5 +1,5 @@
 module TestSuite
-using Test
+using Crayons.Box
 
 export describe, it, test, before_all, before_each, after_all, after_each,
     Expectation, expect, not, and, create_expectation, construct_comparator,
@@ -178,9 +178,9 @@ function execute_queued_tests(suite::Suite)
             end
 
             if test.status === :Pass
-                print(".")
+                print(GREEN_FG(BOLD(".")))
             else
-                print("x")
+                print(RED_FG(BOLD("x")))
             end
 
             execute_after_each_hooks(suite.hooks)
@@ -245,7 +245,7 @@ function and(expected::Expectation)
 end
 
 function construct_comparator(comparator::Function, description::String)
-    return function (expected_value::Any=nothing)
+    return function (expected_value::Any = nothing)
         return (actual::Expectation) -> begin
             if isnothing(expected_value)
                 result = comparator(actual.value)
