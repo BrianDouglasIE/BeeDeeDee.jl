@@ -1,5 +1,4 @@
 module Matchers
-using Test
 using ..TestSuite
 
 export to_be, to_be_true, to_be_false, to_be_nothing, to_be_typeof, to_be_empty,

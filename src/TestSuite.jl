@@ -97,6 +97,10 @@ function get_current_test()::TestResult
     return tests[current_test]
 end
 
+function testset(description::String, f::Union{Task,Function})::Suite
+    return testset(f, description)
+end
+
 function testset(f::Union{Task,Function}, description::String)::Suite
     global suite_count += 1
     parent_suite = nothing
@@ -193,6 +197,10 @@ function execute_queued_tests(suite::Suite)
         end
     end
 
+end
+
+function test(description::String, f::Union{Task,Function})::TestResult
+    return test(f, description)
 end
 
 function test(f::Union{Task,Function}, description::String)::TestResult
