@@ -31,6 +31,15 @@ describe("User Tests") do
              |> and
              |> to_be_less_than_or_equal(255))
         end
+
+        it("should have a valid name skipped", skip = true) do
+            expect(user.name) |> not |> to_be_empty()
+
+            (expect(length(user.name))
+             |> to_be_greater_than_or_equal(1)
+             |> and
+             |> to_be_less_than_or_equal(255))
+        end
     end
 
     describe("User Email Tests") do

@@ -163,13 +163,15 @@ function execute_queued_tests(suite::Suite)
                 test.status = :Pass
             end
 
-            if test.status === :Pass
-                print(GREEN_FG(BOLD(".")))
-            else
+            if test.status === :Fail
                 print(RED_FG(BOLD("x")))
+            else
+                print(GREEN_FG(BOLD(".")))
             end
 
             execute_after_each_hooks(suite.hooks)
+        elseif test.status === :Skip
+            print(YELLOW_FG(BOLD("*")))
         end
     end
 
@@ -179,7 +181,7 @@ function test(description::String, f::Union{Task,Function})::TestResult
     return test(f, description)
 end
 
-function test(f::Union{Task,Function}, description::String)::TestResult
+function test(f::Union{Task,Function}, description::String; skip::Bool = false)::TestResult
     global current_test += 1
 
     suite = get_current_suite()
@@ -188,6 +190,9 @@ function test(f::Union{Task,Function}, description::String)::TestResult
     test.description = description
     test.f = f
     test.stacktrace = stacktrace()
+    if skip
+        test.status = :Skip
+    end
 
     push!(suite.tests, test)
 
