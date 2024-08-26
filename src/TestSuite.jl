@@ -3,7 +3,7 @@ using Crayons.Box
 
 export describe, it, test, before_all, before_each, after_all, after_each,
     Expectation, expect, not, and, create_expectation, construct_comparator,
-    testset
+    testset, suites, tests
 
 struct Expectation
     value::Any
@@ -144,32 +144,6 @@ function execute_suite(suite::Suite)
     execute_after_all_hooks(suite.hooks)
 
     suite.status = :Complete
-    global suite_count -= 1
-
-    if suite_count === 0
-        println()
-        for (_, s) in suites
-            if any(it -> it.status === :Fail, s.tests)
-                println("[", BOLD(s.description), "]")
-
-                for t in s.tests
-                    if t.status === :Fail
-                        println("  [", t.description, "]")
-                        println("    [Failing Expectations]: ", BOLD("$(length(count(it -> !it.result, t.expectations)))"))
-                        for e in t.expectations
-                            if !e.result
-                                println("      ", RED_FG(BOLD(join(e.logs, " "))))
-                                println("\n    ", BOLD("Stacktrace: "))
-                                for (i, frame) in enumerate(t.stacktrace)
-                                    println("    [$i]: ", frame)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
 end
 
 describe = testset

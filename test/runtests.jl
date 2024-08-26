@@ -1,3 +1,4 @@
 using Test
+using BeeDeeDee
 
-@test true
+@test run_test_files(["./basic.test.jl", "./multi-file.test.jl"])
