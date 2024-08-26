@@ -48,6 +48,13 @@ describe("User Tests") do
             expect(user.email) |> to_match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
         end
     end
+
+    describe("User Exception Tests") do
+        it("should throw on invalid property accessed") do
+            expect(() -> user.birthday) |> to_throw()
+            expect(() -> user.age) |> not |> to_throw()
+        end
+    end
 end
 
 

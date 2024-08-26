@@ -7,7 +7,8 @@ export to_be, to_be_true, to_be_false, to_be_nothing, to_be_typeof, to_be_empty,
     to_be_less_than,
     to_be_greater_than_or_equal,
     to_be_less_than_or_equal,
-    to_be_valid_email, to_match
+    to_be_valid_email, to_match,
+    to_throw
 
 to_be = construct_comparator(===, "to be")
 to_be_true = () -> to_be(true)
@@ -26,5 +27,17 @@ to_be_setequal = construct_comparator(issetequal, "to have equal set")
 to_be_disjoint = construct_comparator(isdisjoint, "to be disjoint of")
 to_match = construct_comparator((expected, actual) -> occursin(actual, expected), "to match")
 to_be_valid_email = () -> to_match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+
+function error_thrown(f)
+    try
+        f()
+        return false
+    catch
+        return true
+    end
+end
+
+to_throw = construct_comparator((actual) -> error_thrown(actual), "to throw")
+
 
 end

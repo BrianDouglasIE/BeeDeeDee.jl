@@ -181,7 +181,7 @@ function test(description::String, f::Union{Task,Function})::TestResult
     return test(f, description)
 end
 
-function test(f::Union{Task,Function}, description::String; skip::Bool = false)::TestResult
+function test(f::Union{Task,Function}, description::String; skip::Bool=false)::TestResult
     global current_test += 1
 
     suite = get_current_suite()
@@ -246,14 +246,13 @@ function construct_comparator(comparator::Function, description::String)
         return (actual::Expectation) -> begin
             if isnothing(expected_value)
                 result = comparator(actual.value)
+                log = ["$description"]
             else
                 result = comparator(actual.value, expected_value)
+                log = ["$description $(expected_value)"]
             end
 
             result = actual.comparator(result, true)
-
-            log = ["$description $(expected_value)"]
-
             return create_expectation(actual.value, ===, actual.result && result, [actual.logs...; log])
         end
     end
