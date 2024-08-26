@@ -36,12 +36,13 @@ Base.@kwdef mutable struct Suite
     status::Symbol = :Pending
     hooks::Hooks = Hooks()
     description::String = ""
+    id::Int64 = 0
 end
 
 global suite_count = 0
-global suites = Dict{String,Suite}()
+global suites = Dict{Int64,Suite}()
 global tests = Dict{Int64,TestResult}()
-global current_suite_name = ""
+global current_suite_id = 0
 global current_test = 0
 global top_level_suite = Suite()
 
@@ -78,15 +79,15 @@ function execute_after_each_hooks(hooks::Hooks)
 end
 
 function get_current_suite()::Suite
-    if isempty(current_suite_name)
+    if isempty(current_suite_id)
         return top_level_suite
     end
 
-    if !haskey(suites, current_suite_name)
-        suites[current_suite_name] = Suite()
+    if !haskey(suites, current_suite_id)
+        suites[current_suite_id] = Suite()
     end
 
-    return suites[current_suite_name]
+    return suites[current_suite_id]
 end
 
 function get_current_test()::TestResult
@@ -104,14 +105,15 @@ end
 function testset(f::Union{Task,Function}, description::String)::Suite
     global suite_count += 1
     parent_suite = nothing
-    if !isempty(current_suite_name)
+    if current_suite_id !== 0
         parent_suite = get_current_suite()
     end
 
-    global current_suite_name = description
+    global current_suite_id = suite_count
     suite = get_current_suite()
     suite.description = description
     suite.f = f
+    suite.id = suite_count
 
     if !isnothing(parent_suite)
         push!(parent_suite.child_suites, suite)
@@ -120,16 +122,16 @@ function testset(f::Union{Task,Function}, description::String)::Suite
     end
 
     if !isnothing(parent_suite)
-        global current_suite_name = parent_suite.description
+        global current_suite_id = parent_suite.id
     else
-        global current_suite_name = ""
+        global current_suite_id = 0
     end
 
     return suite
 end
 
 function execute_suite(suite::Suite)
-    global current_suite_name = suite.description
+    global current_suite_id = suite.id
     handle_callback(suite.f)
 
     execute_before_all_hooks(suite.hooks)
