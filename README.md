@@ -85,44 +85,105 @@ end)
 
 ### Comparators
 
-BeeDeeDee.jl provides a variety of comparators to write human readable assertions.
+BeeDeeDee.jl provides a variety of comparators to write human readable assertions. Comparators are available from the `BeeDeeDee.Comparators` module.
 
 ```julia
-using BeeDeeDee.TestSuite
-using BeeDeeDee.Matchers
-
-describe("Matchers", () -> begin
-    it("to_be", () -> expect(1) |> to_be(1))
-    it("not |> to_be", () -> expect(2) |> not |> to_be(1))
-    
-    it("to_be_true", () -> expect(true) |> to_be_true)
-    it("not |> to_be_true", () -> expect(false) |> not |> to_be_true)
-    
-    it("to_be_false", () -> expect(false) |> to_be_false)
-    it("not |> to_be_false", () -> expect(true) |> not |> to_be_false)
-    
-    it("to_be_nothing", () -> expect(nothing) |> to_be_nothing)
-    it("not |> to_be_nothing", () -> expect(1) |> not |> to_be_nothing)
-    
-    it("to_be_typeof", () -> expect(true) |> to_be_typeof(Bool))
-    it("not |> to_be_typeof", () -> expect("x") |> not |> to_be_typeof(Bool))
-    
-    it("to_be_empty", () -> expect([]) |> to_be_empty)
-    it("not |> to_be_empty", () -> expect([1]) |> not |> to_be_empty)
-    
-    it("to_have_key", () -> expect(Dict(:a => 1)) |> to_have_key(:a))
-    it("not |> to_have_key", () -> expect(Dict(:a => 1)) |> not |> to_have_key(:b))
-    
-    it("to_be_subset", () -> expect([1]) |> to_be_subset([1, 2]))
-    it("not |> to_be_subset", () -> expect([3]) |> not |> to_be_subset([1, 2]))
-    
-    it("to_be_setequal", () -> expect([1, 2]) |> to_be_setequal([1, 2]))
-    it("not |> to_be_setequal", () -> expect([1, 2, 3]) |> not |> to_be_setequal([1, 2]))
-    
-    it("to_be_disjoint", () -> expect([1, 4]) |> to_be_disjoint([2, 3]))
-    it("not |> to_be_disjoint", () -> expect([1, 2, 3]) |> not |> to_be_disjoint([1, 4]))
-    
-    it("to_be_in", () -> expect(1) |> to_be_in([1, 2, 3]))
-    it("not |> to_be_in", () -> expect(4) |> not |> to_be_in([1, 2, 3]))
-end)
+using BeeDeeDee.Comparators
 ```
+
+#### to_be
+
+Assert that the actual value is equal to the expected value. Equivalent of `===`.
+
+```julia
+expect(1) |> to_be(1)
+```
+
+#### to_be_true
+
+Assert that the actual value is equal to `true`. Uses `===`.
+
+```julia
+expect(true) |> to_be_true()
+```
+
+#### to_be_false
+
+Assert that the actual value is equal to `false`. Uses `===`.
+
+```julia
+expect(false) |> to_be_false()
+```
+
+#### to_be_nothing
+
+Assert that the actual value is equal to `nothing`. Uses `isnothing`.
+
+```julia
+expect(nothing) |> to_be_nothing()
+```
+
+#### to_be_empty
+
+Assert that the actual value is empty. Uses `isempty`.
+
+```julia
+expect([]) |> to_be_empty()
+```
+
+#### to_be_typeof
+
+Assert that the actual value is a type of the supplied type. Uses `isa`.
+
+```julia
+expect(1) |> to_be_typeof(Int8)
+```
+
+#### to_have_key
+
+Assert that the actual value contains the supplied key. Uses `haskey`.
+
+```julia
+expect(Dict("a" => 1)) |> to_have_key("a")
+```
+
+#### to_be_in
+
+Assert that the actual value is in the supplied `Vector`. Uses `in`.
+
+```julia
+expect(1) |> to_be_in([1])
+```
+
+#### to_match
+
+Assert that the actual value matches the supplied `Regex` or `String`. Uses `occursin`.
+
+```julia
+expect("World") |> to_match("Hello, World!")
+```
+
+#### to_be_valid_email
+
+Assert that the actual value is an email `String`. Uses `r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"`.
+
+```julia
+expect("my@email.com") |> to_be_valid_email()
+```
+
+#### to_throw
+
+Assert that the actual value throws an exception when called.
+
+```julia
+expect(() -> throw(ErrorException("This is an error message."))) |> to_throw()
+```
+
+<!-- to_be_greater_than = construct_comparator(>, "to be greater than")
+to_be_less_than = construct_comparator(<, "to be less than")
+to_be_greater_than_or_equal = construct_comparator(>=, "to be greater than or equal")
+to_be_less_than_or_equal = construct_comparator(<=, "to be less than or equal")
+to_be_subset = construct_comparator(issubset, "to be subset of")
+to_be_setequal = construct_comparator(issetequal, "to have equal set")
+to_be_disjoint = construct_comparator(isdisjoint, "to be disjoint of") -->
+
