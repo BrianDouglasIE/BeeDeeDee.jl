@@ -1,5 +1,5 @@
 using BeeDeeDee.TestSuite
-using BeeDeeDee.Matchers
+using BeeDeeDee.Comparators
 
 struct User
     name::String

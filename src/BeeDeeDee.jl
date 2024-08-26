@@ -2,9 +2,9 @@ module BeeDeeDee
 using Crayons.Box
 
 include("TestSuite.jl")
-include("Matchers.jl")
+include("Comparators.jl")
 
-export TestSuite, Matchers, run_test_files
+export TestSuite, Comparators, run_test_files
 
 function run_test_files(files::Vector{String})
 	for file in files

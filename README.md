@@ -83,9 +83,9 @@ describe("An async describe block with async calls", () -> begin
 end)
 ```
 
-### Matchers
+### Comparators
 
-BeeDeeDee.jl provides a variety of matchers to write expressive and readable tests.
+BeeDeeDee.jl provides a variety of comparators to write human readable assertions.
 
 ```julia
 using BeeDeeDee.TestSuite
