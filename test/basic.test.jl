@@ -16,6 +16,7 @@ describe("User Tests") do
 
     describe("User Age Tests") do
 	    it("should have an age greater than or equal 18") do
+            expect(true) |> to_be_true()
 	        expect(user.age) |> to_be_greater_than(18)
 	        expect(user.age) |> to_be_greater_than_or_equal(18)
 	        expect(user.age) |> not |> to_be_less_than(18)
