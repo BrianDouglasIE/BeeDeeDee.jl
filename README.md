@@ -372,7 +372,7 @@ expect(1) |> to_be_in([1])
 This can be done using the `construct_comparator` function.
 
 ```julia
-to_be_even = construct_comparator("to throw") do actual
+to_be_even = construct_comparator("to be even") do actual
     return iseven(actual)
 end
 ```
