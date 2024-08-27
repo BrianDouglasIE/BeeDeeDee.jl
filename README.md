@@ -366,3 +366,13 @@ Assert that the actual value is in the supplied `Vector`. Uses `in`.
 ```julia
 expect(1) |> to_be_in([1])
 ```
+
+### Create a new comparator
+
+This can be done using the `construct_comparator` function.
+
+```julia
+to_be_even = construct_comparator("to throw") do actual
+    return iseven(actual)
+end
+```
