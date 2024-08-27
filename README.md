@@ -65,6 +65,16 @@ test("should have an age greater than or equal 18") do
 end
 ```
 
+#### Skipping tests
+
+Tests can be skipped by passing in the `skip` keyword arg.
+
+```julia
+it("should have a valid name skipped", skip = true) do
+    expect(user.name) |> not |> to_be_empty()
+end
+```
+
 ### Test Suites
 
 #### `describe` and `testset`
