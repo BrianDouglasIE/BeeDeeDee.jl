@@ -22,8 +22,8 @@ to_be_valid_email,
 to_throw
 
 to_be = construct_comparator(===, "to be")
-to_be_true = Returns(to_be(true))
-to_be_false = Returns(to_be(false))
+to_be_true = () -> to_be(true)
+to_be_false = () -> to_be(false)
 to_be_greater_than = construct_comparator(>, "to be greater than")
 to_be_less_than = construct_comparator(<, "to be less than")
 to_be_greater_than_or_equal = construct_comparator(>=, "to be greater than or equal")
@@ -37,7 +37,7 @@ to_be_subset = construct_comparator(issubset, "to be subset of")
 to_be_setequal = construct_comparator(issetequal, "to have equal set")
 to_be_disjoint = construct_comparator(isdisjoint, "to be disjoint of")
 to_match = construct_comparator((expected, actual) -> occursin(actual, expected), "to match")
-to_be_valid_email = Returns(to_match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+to_be_valid_email = () -> to_match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 to_throw = construct_comparator("to throw") do actual
     try
         actual()
